@@ -1,0 +1,37 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+services:
+  devopsproject:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    expose:
+      - "5000"
+    tty: true
+    
+    restart : always
+    depends_on:
+     - reversproxy
+   
+    networks:
+      - some-net
+   
+   #nginx server 
+  reversproxy:
+    build:
+      context : ./nginx
+      dockerfile : Dockerfile
+    volumes:
+      - ./:/var/www
+     # - "./nginx.conf:/etc/nginx/nginx.conf:ro" #ro:read only
+    ports:
+      - "4003:80"
+    tty: true
+    restart : always
+    networks:
+      - some-net
+networks:
+  some-net:
+    driver: bridge
